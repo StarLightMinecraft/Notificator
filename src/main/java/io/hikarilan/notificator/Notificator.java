@@ -96,7 +96,7 @@ public final class Notificator extends JavaPlugin implements Listener {
         }
         book.author(Component.text("StarLightMinecraft"));
         for (CatalogFilePair pair : find) {
-            var page = Component.text("正阅读：").append(Component.text(pair.file().getName())).append(Component.newline()).color(NamedTextColor.GOLD);
+            var page = Component.text("正阅读：").append(Component.text(pair.file().getName())).append(Component.newline());
             for (String line : Files.readLines(Objects.requireNonNull(pair.file()), StandardCharsets.UTF_8)) {
                 book.addPage(page.append(MiniMessage.miniMessage().deserialize(line)));
             }
@@ -117,10 +117,8 @@ public final class Notificator extends JavaPlugin implements Listener {
         } else {
             info.notifications().addAll(find.stream().map(it -> new PlayerInfo.NotificationInfo(it.catalog().name(), it.file().lastModified())).toList());
             playerInfoMap.put(player.getUniqueId(), info);
-            player.sendMessage(Component.text("您将会在 20 秒后被传送到服务器中..."));
-            Bukkit.getScheduler().runTaskLater(this, () -> {
-                afterAccept(player);
-            }, 20 * 20L);
+            player.sendMessage(Component.text("您将会在 20 秒后被传送到服务器中...").color(NamedTextColor.GOLD));
+            Bukkit.getScheduler().runTaskLater(this, () -> afterAccept(player), 20 * 20L);
         }
         player.openBook(book.build());
     }
@@ -153,10 +151,14 @@ public final class Notificator extends JavaPlugin implements Listener {
     }
 
     private void afterAccept(Player player) {
-        var out = ByteStreams.newDataOutput();
-        out.writeUTF("Connect");
-        out.writeUTF(getConfig().getString("general.teleport", "server"));
-        player.sendPluginMessage(this, "BungeeCord", out.toByteArray());
+        player.sendMessage(Component.text("正在传送至目标服务器，请等待至多 3 秒...").color(NamedTextColor.GOLD));
+        Bukkit.getScheduler().runTaskLater(this, () -> {
+            player.sendMessage(Component.text("已将您传送至目标服务器，如果传送仍未开始，请尝试退出服务器重进，或联系管理员").color(NamedTextColor.LIGHT_PURPLE));
+            var out = ByteStreams.newDataOutput();
+            out.writeUTF("Connect");
+            out.writeUTF(getConfig().getString("general.teleport", "server"));
+            player.sendPluginMessage(this, "BungeeCord", out.toByteArray());
+        }, 3 * 20L);
     }
 
     record CatalogFilePair(@NotNull Catalog catalog, @Nullable File file) {
