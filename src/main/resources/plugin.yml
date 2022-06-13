@@ -1,0 +1,5 @@
+name: Notificator
+version: '${version}'
+main: io.hikarilan.notificator.Notificator
+api-version: 1.18
+authors: [ HikariLan ]

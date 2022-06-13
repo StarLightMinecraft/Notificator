@@ -1,0 +1,9 @@
+general:
+  teleport: "server"
+catalogs:
+  - name: "tos"
+    type: MUST_ACCEPT
+  - name: "update_log"
+    type: CONTINUE
+  - name: "tutorial"
+    type: CONTINUE
