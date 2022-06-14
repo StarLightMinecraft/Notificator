@@ -102,6 +102,7 @@ public final class Notificator extends JavaPlugin implements Listener {
             }
         }
         if (find.stream().anyMatch(it -> it.catalog().type() == Type.MUST_ACCEPT)) {
+            player.sendMessage(Component.text("您正在阅读的文本中包含必须手动接受的文本，请详细阅读这些文本，然后跳转到书末选择是否接受").color(NamedTextColor.RED));
             pending.put(player, find.stream().filter(it -> it.catalog().type() == Type.MUST_ACCEPT).map(it -> new PlayerInfo.NotificationInfo(it.catalog().name(), it.file().lastModified())).toList());
             book.addPage(
                     Component.text()
